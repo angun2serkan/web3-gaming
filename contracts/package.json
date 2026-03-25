@@ -1,0 +1,11 @@
+{
+  "name": "@web3-gaming/contracts",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Anchor build — configured in Task 0.5'",
+    "dev": "echo 'Contracts do not have a dev server'",
+    "lint": "echo 'Rust lint — configured in Task 0.5'",
+    "type-check": "echo 'Rust type check — configured in Task 0.5'"
+  }
+}

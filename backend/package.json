@@ -1,0 +1,16 @@
+{
+  "name": "@web3-gaming/backend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Backend dev server — configured in Task 0.3'",
+    "build": "tsc",
+    "lint": "echo 'Lint — configured in Task 0.3'",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

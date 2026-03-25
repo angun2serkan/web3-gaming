@@ -1,0 +1,16 @@
+{
+  "name": "@web3-gaming/frontend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Frontend dev server — configured in Task 0.2'",
+    "build": "tsc --noEmit",
+    "lint": "echo 'Lint — configured in Task 0.2'",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
