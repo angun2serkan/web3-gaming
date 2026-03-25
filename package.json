@@ -7,7 +7,9 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
-    "clean": "rm -rf node_modules frontend/node_modules backend/node_modules contracts/node_modules frontend/dist backend/dist .turbo frontend/.turbo backend/.turbo contracts/.turbo"
+    "clean": "rm -rf node_modules frontend/node_modules backend/node_modules contracts/node_modules frontend/dist backend/dist .turbo frontend/.turbo backend/.turbo contracts/.turbo",
+    "dev:frontend": "pnpm --filter @web3-gaming/frontend dev",
+    "dev:backend": "pnpm --filter @web3-gaming/backend dev"
   },
   "devDependencies": {
     "turbo": "^2.4.0",

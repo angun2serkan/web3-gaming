@@ -1,4 +1,13 @@
-// Minimal React mount — will be expanded in Task 0.2
-// Dependencies (react, react-dom, vite) will be added in Task 0.2
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router';
+import { App } from './App';
+import './index.css';
 
-export const APP_NAME = 'Web3 Gaming Platform';
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>,
+);
