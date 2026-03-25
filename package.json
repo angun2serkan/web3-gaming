@@ -9,7 +9,10 @@
     "type-check": "turbo type-check",
     "clean": "rm -rf node_modules frontend/node_modules backend/node_modules contracts/node_modules frontend/dist backend/dist .turbo frontend/.turbo backend/.turbo contracts/.turbo",
     "dev:frontend": "pnpm --filter @web3-gaming/frontend dev",
-    "dev:backend": "pnpm --filter @web3-gaming/backend dev"
+    "dev:backend": "pnpm --filter @web3-gaming/backend dev",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:reset": "docker compose down -v && docker compose up -d"
   },
   "devDependencies": {
     "turbo": "^2.4.0",

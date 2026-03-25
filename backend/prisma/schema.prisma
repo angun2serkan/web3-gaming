@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Oyuncu ---
+
+model Player {
+  id            String   @id @default(cuid())
+  walletAddress String   @unique @map("wallet_address")
+  displayName   String?  @map("display_name")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Iliskiler
+  roomPlayers  RoomPlayer[]
+  transactions Transaction[]
+
+  @@map("players")
+}
+
+// --- Oda ---
+
+model Room {
+  id        String     @id @default(cuid())
+  type      RoomType
+  entryFee  Decimal    @map("entry_fee") @db.Decimal(18, 9)
+  status    RoomStatus @default(WAITING)
+  minPlayers Int       @default(5) @map("min_players")
+  maxPlayers Int?      @map("max_players")
+  createdAt DateTime   @default(now()) @map("created_at")
+  closedAt  DateTime?  @map("closed_at")
+
+  // Iliskiler
+  players RoomPlayer[]
+  games   Game[]
+
+  @@index([status])
+  @@index([type, status])
+  @@map("rooms")
+}
+
+enum RoomType {
+  QUICK
+  GRAND
+  PRIVATE
+}
+
+enum RoomStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// --- Oda-Oyuncu Iliskisi ---
+
+model RoomPlayer {
+  id       String           @id @default(cuid())
+  roomId   String           @map("room_id")
+  playerId String           @map("player_id")
+  joinedAt DateTime         @default(now()) @map("joined_at")
+  status   RoomPlayerStatus @default(ACTIVE)
+
+  room   Room   @relation(fields: [roomId], references: [id])
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@unique([roomId, playerId])
+  @@index([roomId])
+  @@index([playerId])
+  @@map("room_players")
+}
+
+enum RoomPlayerStatus {
+  ACTIVE
+  ELIMINATED
+  WINNER
+  DISCONNECTED
+}
+
+// --- Oyun ---
+
+model Game {
+  id         String     @id @default(cuid())
+  roomId     String     @map("room_id")
+  format     GameFormat
+  status     GameStatus @default(IN_PROGRESS)
+  poolAmount Decimal    @map("pool_amount") @db.Decimal(18, 9)
+  commission Decimal    @default(0) @db.Decimal(18, 9)
+  startedAt  DateTime   @default(now()) @map("started_at")
+  endedAt    DateTime?  @map("ended_at")
+
+  room   Room    @relation(fields: [roomId], references: [id])
+  rounds Round[]
+
+  @@index([roomId])
+  @@index([status])
+  @@map("games")
+}
+
+enum GameFormat {
+  FORMAT_A
+  FORMAT_B
+}
+
+enum GameStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// --- Round (Format A) ---
+
+model Round {
+  id              String      @id @default(cuid())
+  gameId          String      @map("game_id")
+  roundNumber     Int         @map("round_number")
+  protectedNumber Int?        @map("protected_number")
+  arrowResult     Int?        @map("arrow_result")
+  status          RoundStatus @default(IN_PROGRESS)
+  startedAt       DateTime    @default(now()) @map("started_at")
+  endedAt         DateTime?   @map("ended_at")
+
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@unique([gameId, roundNumber])
+  @@index([gameId])
+  @@map("rounds")
+}
+
+enum RoundStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+// --- Islem Kaydi ---
+
+model Transaction {
+  id        String          @id @default(cuid())
+  playerId  String          @map("player_id")
+  type      TransactionType
+  amount    Decimal         @db.Decimal(18, 9)
+  txHash    String?         @map("tx_hash")
+  status    TransactionStatus @default(PENDING)
+  createdAt DateTime        @default(now()) @map("created_at")
+
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@index([playerId])
+  @@index([type])
+  @@index([status])
+  @@map("transactions")
+}
+
+enum TransactionType {
+  ENTRY_FEE
+  PAYOUT
+  REFUND
+  COMMISSION
+}
+
+enum TransactionStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}

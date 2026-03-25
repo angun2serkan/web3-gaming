@@ -4,6 +4,8 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import helmet from 'helmet';
+import { prisma } from './db/prisma.js';
+import { redis } from './db/redis.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -39,9 +41,42 @@ io.on('connection', (socket) => {
 // --- Start ---
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
-httpServer.listen(PORT, () => {
-  console.log(`[Server] Running on http://localhost:${PORT}`);
-  console.log(`[Socket.io] WebSocket server ready`);
+async function start() {
+  try {
+    // Veritabani baglanti kontrolleri
+    await prisma.$connect();
+    console.log('[Prisma] PostgreSQL connected');
+
+    await redis.ping();
+    console.log('[Redis] Ping successful');
+
+    httpServer.listen(PORT, () => {
+      console.log(`[Server] Running on http://localhost:${PORT}`);
+      console.log(`[Socket.io] WebSocket server ready`);
+    });
+  } catch (error) {
+    console.error('[Server] Failed to start:', error);
+    process.exit(1);
+  }
+}
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('[Server] SIGTERM received, shutting down...');
+  await prisma.$disconnect();
+  redis.disconnect();
+  httpServer.close();
+  process.exit(0);
 });
+
+process.on('SIGINT', async () => {
+  console.log('[Server] SIGINT received, shutting down...');
+  await prisma.$disconnect();
+  redis.disconnect();
+  httpServer.close();
+  process.exit(0);
+});
+
+start();
 
 export { app, httpServer, io };
