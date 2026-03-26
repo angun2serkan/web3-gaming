@@ -3,6 +3,7 @@ node_modules/
 
 # Build outputs
 dist/
+*.tsbuildinfo
 
 # Turborepo
 .turbo/
@@ -11,6 +12,15 @@ dist/
 .env
 .env.local
 .env.*.local
+.env.staging
+.env.production
+.env.development
+
+# SSL / Sertifikalar
+*.pem
+*.key
+*.crt
+*.csr
 
 # IDE
 .idea/
@@ -31,7 +41,23 @@ target/
 .anchor/
 test-ledger/
 
-# Debug logs
+# Prisma
+*.db
+*.db-journal
+
+# Docker
+docker-compose.override.yml
+
+# Test coverage
+coverage/
+
+# Deploy platformlari
+.vercel/
+.netlify/
+
+# Logs
+*.log
+logs/
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*

@@ -1,0 +1,46 @@
+# Dependencies (konteyner icinde yeniden kurulacak)
+node_modules/
+**/node_modules/
+
+# Build ciktilari (konteyner icinde yeniden derlenecek)
+dist/
+**/dist/
+target/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment (secret'lar Docker env olarak verilir)
+.env
+.env.*
+
+# Test ve development
+coverage/
+test-ledger/
+.turbo/
+.anchor/
+
+# CI/CD
+.github/
+
+# Dokuimantasyon
+tasks/
+*.md
+!README.md
+LICENSE
+
+# Debug logs
+*.log
+npm-debug.log*
+pnpm-debug.log*

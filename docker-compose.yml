@@ -1,18 +1,23 @@
+# ===================================
+# Development: sadece veritabanlari
+# Kullanim: docker compose up -d
+# ===================================
+
 services:
   postgres:
     image: postgres:16-alpine
     container_name: web3gaming-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: web3gaming
-      POSTGRES_PASSWORD: web3gaming_dev
-      POSTGRES_DB: web3gaming
+      POSTGRES_USER: ${POSTGRES_USER:-web3gaming}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-web3gaming_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-web3gaming}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U web3gaming"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-web3gaming}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,9 +27,10 @@ services:
     container_name: web3gaming-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
+    command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

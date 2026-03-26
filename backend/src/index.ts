@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { validateEnv } from './utils/validate-env.js';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -7,21 +8,25 @@ import helmet from 'helmet';
 import { prisma } from './db/prisma.js';
 import { redis } from './db/redis.js';
 
+const env = validateEnv();
+
 const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: env.FRONTEND_URL,
     methods: ['GET', 'POST'],
   },
 });
 
 // --- Middleware ---
 app.use(helmet());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-}));
+app.use(
+  cors({
+    origin: env.FRONTEND_URL,
+  }),
+);
 app.use(express.json());
 
 // --- Health Check ---
@@ -39,7 +44,7 @@ io.on('connection', (socket) => {
 });
 
 // --- Start ---
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = env.PORT;
 
 async function start() {
   try {
