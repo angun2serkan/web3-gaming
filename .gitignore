@@ -28,6 +28,7 @@ Thumbs.db
 
 # Anchor / Solana
 target/
+.anchor/
 test-ledger/
 
 # Debug logs

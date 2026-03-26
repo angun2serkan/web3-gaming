@@ -1,0 +1,388 @@
+{
+  "address": "Hq4xk6qhKHC9utESZ2Bd1hut8v6iGyPbg4ByGo1ih7Lu",
+  "metadata": {
+    "name": "escrow",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Peer-to-Pool Gaming Platform — Escrow Smart Contract"
+  },
+  "instructions": [
+    {
+      "name": "cancel_room",
+      "docs": [
+        "Minimum oyuncuya ulasilamadiysa odayi iptal eder,",
+        "tum giris ucretlerini iade eder."
+      ],
+      "discriminator": [
+        91,
+        107,
+        215,
+        178,
+        200,
+        224,
+        241,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game_room",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "commit_seed_hash",
+      "docs": [
+        "Provably fair: round baslangicinda seed hash'ini on-chain kaydeder."
+      ],
+      "discriminator": [
+        225,
+        4,
+        11,
+        96,
+        242,
+        178,
+        58,
+        213
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game_room",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_seed_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "end_game_format_a",
+      "docs": [
+        "Format A: Oyun bittiginde kazanana pool*95% transfer eder,",
+        "platforma %5 komisyon aktarir."
+      ],
+      "discriminator": [
+        155,
+        185,
+        35,
+        40,
+        46,
+        46,
+        103,
+        165
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game_room",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_revealed_seed",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "initialize_room",
+      "docs": [
+        "Yeni bir oyun odasi olusturur ve escrow vault'u baslatir.",
+        "Oda tipi (Quick, Grand, Private) ve giris ucreti belirlenir."
+      ],
+      "discriminator": [
+        216,
+        42,
+        137,
+        161,
+        61,
+        72,
+        154,
+        238
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game_room",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  97,
+                  109,
+                  101,
+                  95,
+                  114,
+                  111,
+                  111,
+                  109
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "room_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "room_id",
+          "type": "string"
+        },
+        {
+          "name": "entry_fee",
+          "type": "u64"
+        },
+        {
+          "name": "min_players",
+          "type": "u8"
+        },
+        {
+          "name": "max_players",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "join_room",
+      "docs": [
+        "Oyuncunun odaya katilmasini ve giris ucretini escrow'a kilitlemesini saglar.",
+        "SPL Token (USDT) transferi: oyuncu cuzdani → escrow vault"
+      ],
+      "discriminator": [
+        95,
+        232,
+        188,
+        81,
+        124,
+        130,
+        78,
+        139
+      ],
+      "accounts": [
+        {
+          "name": "player",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "game_room",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "GameRoom",
+      "discriminator": [
+        201,
+        210,
+        56,
+        115,
+        19,
+        56,
+        27,
+        69
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "RoomFull",
+      "msg": "Oda dolu — maksimum oyuncu sayisina ulasildi"
+    },
+    {
+      "code": 6001,
+      "name": "RoomNotActive",
+      "msg": "Oda aktif degil — katilim icin WAITING durumunda olmali"
+    },
+    {
+      "code": 6002,
+      "name": "InsufficientPlayers",
+      "msg": "Yetersiz oyuncu — minimum oyuncu sayisina ulasilamadi"
+    },
+    {
+      "code": 6003,
+      "name": "Unauthorized",
+      "msg": "Yetkisiz islem — sadece oda authority'si bu islemi yapabilir"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidSeed",
+      "msg": "Gecersiz seed — hash dogrulamasi basarisiz"
+    },
+    {
+      "code": 6005,
+      "name": "GameNotFinished",
+      "msg": "Oyun henuz bitmedi — payout icin oyunun tamamlanmasi gerekir"
+    },
+    {
+      "code": 6006,
+      "name": "PlayerAlreadyJoined",
+      "msg": "Oyuncu zaten odada — ayni oyuncu iki kez katilamaz"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidEntryFee",
+      "msg": "Gecersiz giris ucreti — belirtilen miktar oda ucretiyle uyusmuyor"
+    },
+    {
+      "code": 6008,
+      "name": "CannotCancelActiveGame",
+      "msg": "Oda iptal edilemez — oyun basladi"
+    }
+  ],
+  "types": [
+    {
+      "name": "GameRoom",
+      "docs": [
+        "Bir oyun odasinin on-chain state'i.",
+        "Her oda icin bir PDA olusturulur."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Oda olusturucusu / platform authority"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "room_id",
+            "docs": [
+              "Odanin benzersiz kimlik bilgisi (backend room ID ile eslesir)"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "entry_fee",
+            "docs": [
+              "Giris ucreti (lamports cinsinden, SPL Token decimals dahil)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "min_players",
+            "docs": [
+              "Minimum oyuncu sayisi (varsayilan: 5)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "max_players",
+            "docs": [
+              "Maksimum oyuncu sayisi"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "current_players",
+            "docs": [
+              "Mevcut oyuncu sayisi"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "total_pool",
+            "docs": [
+              "Toplam havuz miktari (locked USDT)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "Oda durumu: 0=Waiting, 1=InProgress, 2=Completed, 3=Cancelled"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "committed_seed_hash",
+            "docs": [
+              "Provably fair: round oncesi commit edilen seed hash"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump seed"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Olusturulma zamani (Unix timestamp)"
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
