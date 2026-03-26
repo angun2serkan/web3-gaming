@@ -12,9 +12,28 @@
     "dev:backend": "pnpm --filter @web3-gaming/backend dev",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "docker:reset": "docker compose down -v && docker compose up -d"
+    "docker:reset": "docker compose down -v && docker compose up -d",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "frontend/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "backend/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "frontend/**/*.{json,css,md}": [
+      "prettier --write"
+    ],
+    "backend/**/*.{json,css,md}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "turbo": "^2.4.0",
     "typescript": "^5.7.0"
   }

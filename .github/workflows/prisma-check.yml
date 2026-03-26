@@ -1,0 +1,33 @@
+name: Prisma Check
+
+on:
+  pull_request:
+    paths:
+      - 'backend/prisma/**'
+
+jobs:
+  prisma:
+    name: Prisma Schema Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate Schema
+        run: pnpm --filter @web3-gaming/backend exec prisma validate
+
+      - name: Check for pending migrations
+        run: |
+          pnpm --filter @web3-gaming/backend exec prisma migrate diff \
+            --from-migrations ./backend/prisma/migrations \
+            --to-schema-datamodel ./backend/prisma/schema.prisma \
+            --exit-code || echo "::warning::Schema has changes not covered by migrations"
